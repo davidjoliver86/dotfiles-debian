@@ -1,0 +1,49 @@
+---
+  - name: ensure prereqs installed
+    apt:
+      name: "{{ packages }}"
+    vars:
+      packages:
+        - curl
+        - gpg
+        - apt-transport-https
+
+  - name: chrome apt key
+    shell:
+      cmd: curl https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google-chrome-archive-keyring.pgp
+      creates: /etc/apt/keyrings/google-chrome-archive-keyring.pgp
+
+  - name: chrome apt repo
+    ansible.builtin.apt_repository:
+      repo: deb [arch=amd64 signed-by=/etc/apt/keyrings/google-chrome-archive-keyring.pgp] https://dl.google.com/linux/chrome/deb/ stable main
+      state: present
+      filename: google-chrome
+
+  - name: vscode apt key
+    shell:
+      cmd: curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/keyrings/vscode-archive-keyring.pgp
+      creates: /etc/apt/keyrings/vscode-archive-keyring.pgp
+
+  - name: vscode apt repo
+    ansible.builtin.apt_repository:
+      repo: deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/vscode-archive-keyring.pgp] https://packages.microsoft.com/repos/code stable main
+      state: present
+      filename: vscode
+
+  - name: install packages
+    apt:
+      name: "{{ packages }}"
+      update_cache: true
+    vars:
+      packages:
+        - vim
+        - git
+        - htop
+        - jq
+        - curl
+        - gpg
+        - apt-transport-https
+        - fish
+        - google-chrome-stable
+        - flatpak
+        - code
